@@ -1,0 +1,20 @@
+Parameter y : bits 
+Parameter mod2 : [bits->bits] 
+Parameter andb : [[bits] -> bits -> bits] 
+Parameter orb : [[bits] -> bits -> bits] 
+Parameter xorb : [[bits] -> bits -> bits] 
+Parameter  notb : [[bits] -> bits] 
+
+Definition add = 
+let div2 = func (x:bits) -> case bits x <nil, <func (x:bits) -> x, func (x:bits) -> x>> in
+func (l:bits) -> srec ([bits]->[bits]->[bits]->bits)
+  (func (x:bits)(y:bits)(c:bits) -> mod2 c)
+  (func (u:bits)(a:[bits]->[bits]->[bits]->bits)(x:bits)(y:bits)(c:bits) ->
+    let carry = orb (andb x (orb y c)) (andb (notb x) (andb y c)) in
+    case bits (xorb (xorb x y) c)
+      <(B0 (a (div2 x) (div2 y) carry)), 
+       <(func (u:bits) -> B0 (a (div2 x) (div2 y) carry)) ,(func (u:bits) -> B0 (a (div2 x) (div2 y) carry)) >
+      >
+  )
+  l
+

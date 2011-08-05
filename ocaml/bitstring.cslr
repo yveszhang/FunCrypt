@@ -1,0 +1,47 @@
+Definition _ = func (x : bits & bits) -> first x
+
+Definition rs =
+  func (x : bits) -> 
+    let hrs = func (b : bits) (r : $bits) -> 
+      bind b = rand in 
+      bind u = r in 
+      case ($bits) b < return nil, func (x : bits) -> return (B0 u), func (x : bits) -> return (B1 u) > 
+    in 
+    srec ($bits) (return nil) hrs x
+
+Definition conc = 
+  let hc = func (m : bits) (r : bits) -> 
+    case (bits) m <r, func (x : bits) -> B0 r, func (x : bits) -> B1 r>
+  in 
+  func (x : bits) (y : bits) -> srec (bits) y hc x	
+
+Definition conc2 = 
+  let hc = func (m : bits) (r : bits) -> 
+    case (bits) m <r, func (x : bits) -> B0 r, func (x : bits) -> B1 r>
+  in 
+  func (x : bits) (y : bits) -> srec (bits) x hc y
+
+Definition hd = 
+  func (x : bits) -> 
+    case (bits)  x <nil, func (y: bits) -> B0 nil, func (y : bits) -> B1 nil >
+
+Definition tl = 
+  func (x : bits) -> 
+    case (bits)  x <nil, func (y: bits) -> y, func (y : bits) -> y >
+
+Definition split = 
+  let hs = func (m : bits) (r : bits * bits) -> 
+    let (v1 * v2) = r  in 
+    case (bits * bits) v2 
+    < v1 * v2, 
+      func (y : bits) -> (conc2 v1 (B0 nil)) * y, 
+      func (y : bits) -> (conc2 v1 (B1 nil)) * y
+    >
+  in func (x: bits) (n: bits) -> srec (bits * bits) (nil * x) hs n
+
+Parameter o : bits 
+Parameter f : [bits] -> [bits] -> [bits] -> bits
+
+Definition test = 
+  func (x : bits) (o : bits) -> f x o o
+

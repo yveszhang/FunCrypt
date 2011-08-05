@@ -1,0 +1,12 @@
+Type message = bits & bits & bits
+
+Parameter y : bits 
+Parameter mod2 : [bits->bits] 
+Parameter andb : [[bits] -> bits -> bits] 
+Parameter orb : [[bits] -> bits -> bits] 
+Parameter xorb : [[bits] -> bits -> bits] 
+Parameter notb : [[bits] -> bits]
+
+Definition  div2 = func (x:bits) -> case bits x <nil, <func (x:bits) -> x, func (x:bits) -> x>> 
+
+Definition test = func (x : [bits] -> bits) (y : [bits] -> bits) (z : bits) -> x (y z) 

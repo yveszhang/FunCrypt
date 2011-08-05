@@ -1,0 +1,43 @@
+betareduce.cmi: types.cmo
+common.cmi: types.cmo
+debruijn.cmi: types.cmo
+environment.cmi: types.cmo
+fcparsing.cmi: types.cmo
+parser.cmi: types.cmo
+typing.cmi: types.cmo
+betareduce.cmo: types.cmo debruijn.cmi common.cmi betareduce.cmi
+betareduce.cmx: types.cmx debruijn.cmx common.cmx betareduce.cmi
+bind.cmo: types.cmo debruijn.cmi common.cmi
+bind.cmx: types.cmx debruijn.cmx common.cmx
+common.cmo: types.cmo fcparsing.cmi common.cmi
+common.cmx: types.cmx fcparsing.cmx common.cmi
+debruijn.cmo: types.cmo common.cmi debruijn.cmi
+debruijn.cmx: types.cmx common.cmx debruijn.cmi
+debug.cmo: types.cmo debruijn.cmi common.cmi
+debug.cmx: types.cmx debruijn.cmx common.cmx
+environment.cmo: typing.cmi types.cmo fcparsing.cmi debruijn.cmi common.cmi \
+    environment.cmi
+environment.cmx: typing.cmx types.cmx fcparsing.cmx debruijn.cmx common.cmx \
+    environment.cmi
+fcparsing.cmo: types.cmo parser.cmi lexer.cmo fcparsing.cmi
+fcparsing.cmx: types.cmx parser.cmx lexer.cmx fcparsing.cmi
+funcrypt.cmo: typing.cmi types.cmo testtactics.cmo fcparsing.cmi \
+    environment.cmi debug.cmo debruijn.cmi common.cmi bind.cmo betareduce.cmi
+funcrypt.cmx: typing.cmx types.cmx testtactics.cmx fcparsing.cmx \
+    environment.cmx debug.cmx debruijn.cmx common.cmx bind.cmx betareduce.cmx
+indistinguish.cmo: types.cmo debruijn.cmi betareduce.cmi
+indistinguish.cmx: types.cmx debruijn.cmx betareduce.cmx
+lexer.cmo: parser.cmi
+lexer.cmx: parser.cmx
+parser.cmo: types.cmo debug.cmo parser.cmi
+parser.cmx: types.cmx debug.cmx parser.cmi
+tactic.cmo: types.cmo debruijn.cmi common.cmi betareduce.cmi
+tactic.cmx: types.cmx debruijn.cmx common.cmx betareduce.cmx
+testtactics.cmo: types.cmo tactic.cmo fcparsing.cmi environment.cmi \
+    debruijn.cmi common.cmi bind.cmo betareduce.cmi
+testtactics.cmx: types.cmx tactic.cmx fcparsing.cmx environment.cmx \
+    debruijn.cmx common.cmx bind.cmx betareduce.cmx
+types.cmo:
+types.cmx:
+typing.cmo: types.cmo fcparsing.cmi debug.cmo common.cmi typing.cmi
+typing.cmx: types.cmx fcparsing.cmx debug.cmx common.cmx typing.cmi

@@ -1,0 +1,54 @@
+Type msg = bits & bits
+
+Parameter eta : [bits]
+
+Parameter rs : [[bits] -> $bits]
+
+Parameter power : [bits -> [bits] -> bits]
+Parameter mult : [[bits] -> [bits] -> bits]
+Parameter square : [[bits] -> bits]
+
+Parameter gen : bits
+
+Parameter zgroup : [[bits] -> $bits]
+Parameter qr : [[bits] -> $bits]
+
+Parameter enc : [[bits] -> [msg] -> [msg] -> $msg]
+Parameter kgen : [[bits] -> $msg]
+Parameter dec : [[bits] -> [msg] -> [msg] -> msg]
+
+Hypothesis DDH: 
+  bind x = zgroup eta in 
+  bind y = zgroup eta in 
+  return <power gen x, power gen y, power gen (mult x y)> 
+==
+  bind x = zgroup eta in 
+  bind y = zgroup eta in 
+  bind z = zgroup eta in 
+  return <power gen x, power gen y, power gen z> 
+
+Hypothesis DDH_1: 
+  func (phi : bits -> bits -> bits -> $bits) -> 
+  bind x = zgroup eta in bind y = zgroup eta in 
+  phi (power gen x) (power gen y) (power gen (mult x y))
+==
+  func (phi : bits -> bits -> bits -> $bits) -> 
+  bind x = zgroup eta in bind y = zgroup eta in bind z = zgroup eta in 
+  phi (power gen x) (power gen y) (power gen z)
+
+Hypothesis Fact1:
+  bind x = zgroup eta in return (square x) 
+== 
+  bind x = qr eta in return x 
+
+Hypothesis Fact1_1 :
+  func (phi : [bits] -> $bits) -> bind x = zgroup eta in phi (square x)
+==
+  func (phi : [bits] -> $bits) -> bind x = qr eta in phi x
+
+Definition _ = 
+  func (m : msg) -> 
+  bind k1 = kgen eta in 
+  bind k2 = kgen eta in 
+  bind c = enc eta m k1 in 
+  return (dec eta c k2)

@@ -1,0 +1,77 @@
+y : bits ;
+mod2 : [bits->bits] ;
+andb : [[bits] -> bits -> bits] ;
+orb : [[bits] -> bits -> bits] ;
+xorb : [[bits] -> bits -> bits] ;
+notb : [[bits] -> bits]
+;;
+func (x:<bits>) -> x
+;;
+func (x: bits) -> x 
+;;
+func (f:<bits>->bits)(x:<bits>) -> f x
+;;
+func (f:<bits>->bits)(x:bits) -> f x
+;;
+func (f:bits->bits)(x:bits) -> f x
+;;
+func (f:<<bits>->bits>)(x:<bits>) -> f x
+;;
+func (f:<bits> -> <bits> -> bits)(x : bits) -> f x x
+;;
+func (f:<[bits]->bits>)(g:[bits->bits])(x:[bits]) -> f (g x)
+;;
+<y,y>
+;;
+y(*)y
+;;
+func (f:[bits&bits]->bits)(x:[bits]) -> f <x,x>
+;;
+func (f:<bits&bits>->bits)(x:bits) -> f <x,x>
+;;
+func (f:[bits*bits]->bits)(x:[bits]) -> f x (*) x
+;;
+func (f:<bits*bits>->bits)(x:bits) -> f x (*) x
+;;
+bind b = rand in return B0 b
+;;
+let f = func (x:[bits]) -> x in func (x:[bits]) -> f x
+;;
+let (x*y) = (B0 nil) (*) nil in x
+;;
+first <B0 nil, nil>
+;;
+if B0 nil then B1 else B0
+;;
+case bits (B0 nil) <nil, <func (x:<bits>) -> nil, func (x:<bits>) -> nil>>
+;;
+func (x:bits) -> case bits x <nil, <func (x:bits) -> x, func (x:bits) -> x>>
+;;
+func (x : bits)(f:<bits->bits>) -> case bits x <f x,<f,f>>
+;;
+func (f:<<bits>->bits>)(g:<bits->bits>)(x:bits) -> f (g x)
+;;
+srec bits (B0 nil) (func (x:[bits])(y:<bits>) -> x) (B1 nil)
+;;
+let sq = func (x:[bits]) -> srec bits (B1 nil) (func (y:[bits])(q:bits) -> B0 (B0 q)) x in
+func (x:[bits]) -> sq (sq x)
+;;
+func (x:[bits])(y:[bits])(c:[bits]) ->
+    orb c c
+;;
+let div2 = func (x:bits) -> case bits x <nil, <func (x:bits) -> x, func (x:bits) -> x>> in
+func (l:bits) -> srec (bits->bits->bits->bits)
+  (func (x:bits)(y:bits)(c:bits) -> mod2 c)
+  (func (u:bits)(a:bits->bits->bits->bits)(x:bits)(y:bits)(c:bits) ->
+    let carry = orb (andb x (orb y c)) (andb (notb x) (andb y c)) in
+    case bits (xorb (xorb x y) c)
+      <(B0 (a (div2 x) (div2 y) carry)), 
+       <(func (u:bits) -> B0 (a (div2 x) (div2 y) carry)) ,(func (u:bits) -> B0 (a (div2 x) (div2 y) carry)) >
+      >
+  )
+  l
+;;
+func (x : bits)(y : bits) -> x y
+;;
+func (x:bits*bits) -> let (a*b) = x in b
+;;

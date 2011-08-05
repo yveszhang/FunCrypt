@@ -1,0 +1,76 @@
+ZY-------------------------------------------------------------------------------
+Add aspect and type to let and bind. (and tslet?)
+Reduction should remove dead code.
+
+DONE----ZY-------------------------------------------------------------------------------
+Add parameters to hypotheses
+
+DN-------------------------------------------------------------------------------
+Clean ElGamal's proof with parameters:
+Hypotheses will convert ill-typed parameter into the right type
+
+DN-------------------------------------------------------------------------------        
+In permute, check if it is validated by an hypothesis
+
+---------------------------------------------------------------------------------         
+In extract (common.ml), extract local environment for typing purpose
+
+DONE----ZY-------------------------------------------------------------------------------       
+Improve parsing:
+parse string to fc_program, fc_term, db_term...
+
+DONE----ZY-------------------------------------------------------------------------------      
+Implement beta-eta-delta-equivalence (i.e., normalization) in order to check convertibility
+of expressions (in change_at)
+
+DONE----ZY-------------------------------------------------------------------------------     
+Recompute positions of P_fst and P_snd in postparse.ml
+
+DONE----ZY------------------------------------------------------------------------------- 
+Tactic to swap bind/let
+then move using swap
+
+DONE----DN------------------------------------------------------------------------------- 
+Function to compute position of an identifier
+
+DONE----ZY------------------------------------------------------------------------------- 
+ Printing of subterms ignoring invalid indices
+
+DONE----DN-------------------------------------------------------------------------------  
+change_at [...] with "keygen"
+
+convert whole db_term to fc_term
+replace subterm
+convert whole fc_term to db_term
+extract old and new subterms and check convertibility
+
+DN-------------------------------------------------------------------------------    
+ad hoc tactic for DDH
+
+bind new =
+ bind x ...
+ bind y...
+ ret <g^x, g^y, (g^x)^y> in
+(func (gx gy gxy) ->
+  ...) (fst (fst new)) (snd (fst new)) (snd new)
+
+-------------------------------------------------------------------------------   
+Fix priorities:
+
+Examples of confusing priorities:
+"f x (*) x" is parsed as "f (x (*) x)".
+"bits&bits->bits" is parsed as"bits　&　(bits->bits)".
+
+application should have the highest priority
+followed by &, *, (_,_) and (*)
+followed by ->
+
+-------------------------------------------------------------------------------
+At the end of output, write the number of errors met
+
+-------------------------------------------------------------------------------
+make (*), (_,_), * and & associative to the left
+
+-------------------------------------------------------------------------------
+Add abstract datatypes
+Example: type group_element

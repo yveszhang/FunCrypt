@@ -1,0 +1,72 @@
+Type PK = bits
+Type MSG = bits
+Type CT = bits & bits
+
+Parameter equal : [ bits -> bits -> bits ]
+
+Parameter eta : [ bits ]
+
+Parameter groupgen : [ [bits] -> $(($bits) & ([bits] -> [bits] -> bits) & ([bits] -> [bits] -> bits) & bits) ]
+
+Definition _ =
+
+bind group = groupgen eta in
+
+let Zstar = first (first (first group)) in
+
+let mult = second (first (first group)) in
+
+let power = second (first group) in
+
+let generator = second group in
+
+lethypo DDH =
+  bind x = Zstar in
+  bind y = Zstar in 
+  return <power generator x, power generator y, power generator (mult x y)>
+==
+  bind x = Zstar in
+  bind y = Zstar in
+  bind z = Zstar in 
+  return <power generator x, power generator y, power generator z> in
+
+lethypo bidon =
+  bind x = Zstar in return x == bind x = Zstar in return (mult x x) in
+
+let keygen =
+  bind x = Zstar in
+  return <power generator x, x> in
+
+(*
+(* Rewrite keygen in the right form to apply the hypothesis bidon *)
+let keygen0 =
+  bind y = (bind x = Zstar in return x) in return <power generator y, y> in
+
+(* Apply hypothesis bidon *)
+let keygen1 =
+  bind y = (bind x = Zstar in return (mult x x)) in return <power generator y, y> in
+
+(* Associativity of the monad *)
+let keygen2 =
+  bind x = Zstar in bind y = return (mult x x) in return <power generator y, y> in
+
+(* simplification *)
+let keygen3 =
+  bind x = Zstar in return <power generator (mult x x), mult x x> in
+*)
+
+let encrypt =
+  func (pk : PK)(m : MSG) ->
+    bind y = Zstar in
+    return <power generator y, mult (power pk y) m> in
+
+let semantic_security =
+  func (A : PK -> $ ((MSG & MSG) & (CT -> $bits))) ->
+    bind pk_sk = keygen in let pk = first pk_sk in let sk = second pk_sk in
+    bind m0_m1_A2 = A pk in let m0_m1 = first m0_m1_A2 in let m0 = first m0_m1 in let m1 = second m0_m1 in let A2 = second m0_m1_A2 in
+    bind b = rand in
+    bind c = encrypt pk (if b then m1 else m0) in
+    bind b2 = A2 c in
+    return (equal b2 b) in
+
+return semantic_security

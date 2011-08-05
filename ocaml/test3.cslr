@@ -1,0 +1,16 @@
+Definition _ = 
+
+func (f : bits -> bits -> $bits) (x : bits) (y : bits) -> 
+bind z = f x y in return z
+
+(* Test for beta-reduce *)
+(* func (x : bits) (y : bits) (f : bits -> bits -> bits) ->  *)
+(* (func (z1 : bits) (z2 : bits) -> f z1 )  y x *)
+
+(* func (x : bits) (h : bits -> bits) (f : bits -> bits) (g : bits -> bits) ->  *)
+(*   let (z1 * z2) = (g (f x)) * (f (g x)) in < h z1, h z2> *)
+
+(* Test for swap *)
+(* func (h : bits -> bits) (f : bits -> bits) (g : bits -> $bits) (z : bits) -> 
+  let y = g z in let l = (func (u : bits) -> f u)  in  bind x = y in return (h (l x))
+*)

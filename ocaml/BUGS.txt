@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------------
+OPEN
+$ ./funcrypt -parse elgamal5.cslr 
+
+Typing error [ Line 40(2 -- 9) ]:
+The variable carrier is not found in the typing context! Probably it is declared as a linear argument but is used non-linearly.
+
+-------------------------------------------------------------------------------
+OPEN
+
+The tensor product is parsed by "y (*) y" but is pretty-printed as "< y * y >".
+
+"case bits" is pretty-printed as "Case [Bits]".
+
+first, second, bind, rand and return...etc are pretty-printed as First, Second, Bind, Rand and Return...etc
+
+-------------------------------------------------------------------------------
+CLOSED
+
+When we make a change, we can introduce any new hypothesis because
+db_alpha_equal do no check hypothesis.
+
+
+-------------------------------------------------------------------------------
+CLOSED
+
+The term
+
+  func (f:<bits->bits>) -> func (g:<bits->bits>) -> func (x:bits) -> f (g x)
+
+is rejected but should be accepted because  bits->A = <bits>->A.
+-------------------------------------------------------------------------------
+CLOSED
+
+The typing error for
+
+  func (f:<bits&bits>->bits) -> func (x:<bits>) -> f x
+
+is "Application with incorrect aspect!" but the problem is not with
+the aspect.
+
+-------------------------------------------------------------------------------
+CLOSED
+
+$ cat bug.cslr
+x:bits
+;;
+func (f:<[bits]->bits>) -> func (g:[bits->bits]) -> func (x:[bits]) -> f (g x)
+;;
+
+$ ./fcparser -type bug.cslr 
+
+{ f : <[Bits] -> Bits> } |- f : [Bits] -> Bits
+{ g : [Bits -> Bits] } |- g : Bits -> Bits
+{ x : Bits, x : [Bits] } |- x : Bits
+{ x : Bits, g : [Bits -> Bits], x : [Bits] } |- g ( x )  : Bits
+Fatal error: exception Types.FC_type_error("{ x : Bits, f : <[Bits] -> Bits>, g : [Bits -> Bits], x : [Bits] } |- f ( g ( x )  )  : Application with incorrect aspect!")
