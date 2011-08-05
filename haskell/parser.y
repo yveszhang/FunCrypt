@@ -14,8 +14,6 @@ import Lexer
 %name fcParsing
 %tokentype { Token }
 %error { parseError }
-%monad { P } { bindP } { returnP }
-%lexer { fcParseLexer } { FCEND }
 
 %token
   "->"		{ ARROW $$ }
@@ -58,7 +56,7 @@ import Lexer
   "id"		 { IDENT p s } 
   "idcap"	 { IDENTCAP p s } 
   "bs"		 { BITSTRING p s } 
-  "end"		 { END $$ }
+  "fcend"	 { FCEND }
   "fcstart" 	 { FCSTART }
 
 %%
@@ -141,14 +139,14 @@ fcFunction :: { ProgramPosn }
 	   | '(' fcProgram ')'
 	     { let newPosn = (fst $1, snd $3) in $2 }
 
-fcTuple :: { ProgramPosn }
+FcTuple :: { ProgramPosn }
 	: fcProgram ',' fcProgram
 	  { let newPosn = (fst $ getProgPosn $1, snd $ getProgPosn $3) in PPpair newPosn ($1, $3) }
-	| fcTuple ',' fcProgram
+	| FcTuple ',' fcProgram
 	  { let newPosn = (fst $ getProgPosn $1, snd $ getProgPosn $3) in PPpair newPosn ($1, $3) }
 
 fcProgram :: { ProgramPosn }
-          : fcFunction
+	  : fcFunction
 	    { $1 }
 	  | "nil"
 	    { PPnil $1 }
@@ -161,7 +159,7 @@ fcProgram :: { ProgramPosn }
 	      let IDENT _ s = $2 in 
 	      PPlet newPosn (s, $4, $6)
 	    }
-	  | '<' fcTuple '>'
+	  | '<' FcTuple '>'
 	    { let pos = (fst $1, snd $3) in
 	      let PPpair _ progPair = $2 in 
 	      PPpair pos progPair 
@@ -271,15 +269,11 @@ makeFunction posn [] prog = prog
 makeFunction posn (arg : args) prog = PPfunc posn (arg, makeFunction nextPosn args prog)
 	     where nextPosn = if args == [] then posn else (fst (fst $ head args), snd posn)
 
-data ParseResult a = Result a | Failure String
-type P a = [Token] -> ParseResult a 
-
-fcParseLexer :: (Token -> P a) -> P a
-fcParseLexer cont l = cont $ head l
-
 parseError :: [Token] -> a
-parseError [] = error "Parse error: Parsing reaches the end."
-parseError ts = error $ "Parse error " ++ position ++info
-	   where position = fcPosnToString $ getTokenPosn (head ts) 
-	   	 info = ""
+parseError [] = error "Parse error"
+parseError (tok : toks) = error $ "Parse error" ++ position ++ ": " ++ info
+  where position = if tok == FCEND then "" else " @" ++ (fcPosnToString . getTokenPosn) tok
+        info = case tok of FCEND -> "Parsing reaches the end."
+                           IDENT _ _ -> "If it's a type variable, it must start with a capital."
+                           IDENTCAP _ _ -> "If it's not a type variable, it must start with a non-capital."
 }

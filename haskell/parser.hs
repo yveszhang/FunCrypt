@@ -660,7 +660,7 @@ happyNewToken action sts stk (tk:tks) =
 	IDENT p s -> cont 38#;
 	IDENTCAP p s -> cont 39#;
 	BITSTRING p s -> cont 40#;
-	END happy_dollar_dollar -> cont 41#;
+	FCEND -> cont 41#;
 	FCSTART -> cont 42#;
 	_ -> happyError' (tk:tks)
 	}
@@ -774,10 +774,12 @@ makeFunction posn (arg : args) prog = PPfunc posn (arg, makeFunction nextPosn ar
 	     where nextPosn = if args == [] then posn else (fst (fst $ head args), snd posn)
 
 parseError :: [Token] -> a
-parseError [] = error "Parse error: Parsing reaches the end."
-parseError ts = error $ "Parse error " ++ position ++info
-	   where position = fcPosnToString $ getTokenPosn (head ts) 
-	   	 info = ""
+parseError [] = error "Parse error"
+parseError (tok : toks) = error $ "Parse error" ++ position ++ ": " ++ info
+  where position = if tok == FCEND then "" else " @" ++ (fcPosnToString . getTokenPosn) tok
+        info = case tok of FCEND -> "Parsing reaches the end."
+                           IDENT _ _ -> "If it's a type variable, it must start with a capital."
+                           IDENTCAP _ _ -> "If it's not a type variable, it must start with a non-capital."
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "templates/GenericTemplate.hs" #-}
 {-# LINE 1 "<built-in>" #-}

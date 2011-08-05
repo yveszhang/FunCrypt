@@ -61,7 +61,6 @@ $white+		;
 @ident 		{ \p s -> IDENT (convertPosition p s) s }
 @identcap 	{ \p s -> IDENTCAP (convertPosition p s) s }
 @bits		{ \p s -> BITSTRING (convertPosition p s) s }
-"End"		{ \p s -> END (convertPosition p s) }
 
 {
 type FcPosn = ((Int, Int), (Int, Int)) 
@@ -164,6 +163,54 @@ getTokenPosn (LEXERROR p) = p
 getTokenPosn FCSTART = ((-1, -1), (0, 0))
 getTokenPosn FCEND = ((-1, -1), (-1, -1))
 
+tokenName :: Token -> String
+tokenName (ARROW _) = "ARROW"
+tokenName (LPAREN _) = "LPAREN"
+tokenName (RPAREN _) = "RPAREN"
+tokenName (LPAIR _) = "LPAIR"
+tokenName (RPAIR _) = "RPAIR"
+tokenName (LBOX _) = "LBOX"
+tokenName (RBOX _) = "RBOX"
+tokenName (IMPORT _) = "IMPORT"
+tokenName (TYPE _) = "TYPE"
+tokenName (PARAMETER _) = "PARAMETER"
+tokenName (DEFINITION _) = "DEFINITION"
+tokenName (HYPOTHESIS _) = "HYPOTHESIS"
+tokenName (BITS _) = "BITS"
+tokenName (FUNC _) = "FUNC"
+tokenName (LET _) = "LET"
+tokenName (IN _) = "IN"
+tokenName (FIRST _) = "FIRST"
+tokenName (SECOND _) = "SECOND"
+tokenName (ZERO _) = "ZERO"
+tokenName (ONE _) = "ONE"
+tokenName (NIL _) = "NIL"
+tokenName (SREC _) = "SREC"
+tokenName (CASE _) = "CASE"
+tokenName (IF _) = "IF"
+tokenName (THEN _) = "THEN"
+tokenName (ELSE _) = "ELSE"
+tokenName (BIND _) = "BIND"
+tokenName (RETURN _) = "RETURN"
+tokenName (RAND _) = "RAND"
+tokenName (LETHYPO _) = "LETHYPO"
+tokenName (COLON _) = "COLON"
+tokenName (SEMICOLON _) = "SEMICOLON"
+tokenName (COMMA _) = "COMMA"
+tokenName (DOLLAR _) = "DOLLAR"
+tokenName (AND _) = "AND"
+tokenName (STAR _) = "STAR"
+tokenName (EQUAL _) = "EQUAL"
+tokenName (IDENT _ s) = "ID:" ++ s
+tokenName (IDENTCAP _ s) = "ID:" ++ s 
+tokenName (BITSTRING _ s) = "BS:" ++ s 
+tokenName (LEXERROR _) = "LEXERROR"
+tokenName FCSTART = "FCSTART"
+tokenName FCEND = "FCEND"
+
+
+endTokens = FCEND : endTokens
+
 fcLexing :: String -> [Token]
-fcLexing s = (FCSTART : alexScanTokens s) ++ [FCEND]
+fcLexing s = (FCSTART : alexScanTokens s) ++ endTokens
 }
